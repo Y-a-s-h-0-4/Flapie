@@ -52,24 +52,32 @@ function UpdateRecipeContent() {
   const handleSubmit = async (formData) => {
     try {
       const recipeId = searchParams.get('id');
+      if (!recipeId) {
+        throw new Error('Recipe ID is missing');
+      }
+
       const response = await fetch(`/api/recipe/${recipeId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          images: formData.images || [] // Ensure images is always an array
+        }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update recipe');
+        throw new Error(data.error || 'Failed to update recipe');
       }
 
       router.push('/profile');
     } catch (error) {
       console.error('Error updating recipe:', error);
-      setError(error.message);
+      setError(error.message || 'Failed to update recipe');
     }
   };
 

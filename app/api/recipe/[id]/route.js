@@ -31,6 +31,14 @@ export const GET = async (request, { params }) => {
 
 export const PATCH = async (request, { params }) => {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return new Response(JSON.stringify({ error: "Not authenticated" }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         const { title, description, ingredients, instructions, cookingTime, category, images } = await request.json();
 
         // Validate required fields
@@ -41,7 +49,15 @@ export const PATCH = async (request, { params }) => {
             });
         }
 
-        await connectToDB();
+        try {
+            await connectToDB();
+        } catch (dbError) {
+            console.error("Database connection error:", dbError);
+            return new Response(JSON.stringify({ error: "Database connection failed" }), {
+                status: 503,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
         // Find the existing recipe by ID
         const existingRecipe = await Recipe.findById(params.id);
@@ -53,24 +69,63 @@ export const PATCH = async (request, { params }) => {
             });
         }
 
-        // Update the recipe with new data
-        existingRecipe.title = title;
-        existingRecipe.description = description;
-        existingRecipe.ingredients = ingredients;
-        existingRecipe.instructions = instructions;
-        existingRecipe.cookingTime = cookingTime;
-        existingRecipe.category = category;
-        existingRecipe.images = images;
+        // Check if the user is the creator of the recipe
+        if (existingRecipe.creator.toString() !== session.user.id) {
+            return new Response(JSON.stringify({ error: "You can only update your own recipes" }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
-        await existingRecipe.save();
+        try {
+            // Update the recipe with new data
+            const updatedRecipe = await Recipe.findByIdAndUpdate(
+                params.id,
+                {
+                    $set: {
+                        title,
+                        description,
+                        ingredients,
+                        instructions,
+                        cookingTime,
+                        category,
+                        ...(images && { images })
+                    }
+                },
+                { 
+                    new: true, 
+                    runValidators: true,
+                    upsert: false
+                }
+            ).populate('creator');
 
-        return new Response(JSON.stringify({ message: "Recipe updated successfully" }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-        });
+            if (!updatedRecipe) {
+                throw new Error('Failed to update recipe');
+            }
+
+            return new Response(JSON.stringify({ 
+                message: "Recipe updated successfully",
+                recipe: updatedRecipe
+            }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (updateError) {
+            console.error("Error updating recipe:", updateError);
+            return new Response(JSON.stringify({ 
+                error: "Failed to update recipe",
+                details: updateError.message 
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
     } catch (error) {
-        console.error("Error updating recipe:", error);
-        return new Response(JSON.stringify({ error: "Failed to update recipe" }), {
+        console.error("Error in PATCH request:", error);
+        return new Response(JSON.stringify({ 
+            error: "Failed to update recipe",
+            details: error.message 
+        }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });

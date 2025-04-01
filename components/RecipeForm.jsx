@@ -64,10 +64,44 @@ const RecipeForm = ({ type, recipe, setRecipe, handleSubmit }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Validate required fields
+    if (!recipe.title || !recipe.description || !recipe.category || !recipe.cookingTime) {
+      setIsSubmitting(false);
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Validate ingredients and instructions
+    if (recipe.ingredients.length === 0 || recipe.ingredients.some(ing => !ing.trim())) {
+      setIsSubmitting(false);
+      alert('Please add at least one ingredient and ensure all ingredient fields are filled');
+      return;
+    }
+
+    if (recipe.instructions.length === 0 || recipe.instructions.some(inst => !inst.trim())) {
+      setIsSubmitting(false);
+      alert('Please add at least one instruction and ensure all instruction fields are filled');
+      return;
+    }
+
     try {
-      await handleSubmit(recipe);
+      // Clean up the data before submission
+      const cleanedRecipe = {
+        ...recipe,
+        title: recipe.title.trim(),
+        description: recipe.description.trim(),
+        ingredients: recipe.ingredients.map(ing => ing.trim()).filter(Boolean),
+        instructions: recipe.instructions.map(inst => inst.trim()).filter(Boolean),
+        cookingTime: parseInt(recipe.cookingTime),
+        category: recipe.category.toLowerCase(),
+        images: recipe.images || []
+      };
+
+      await handleSubmit(cleanedRecipe);
     } catch (error) {
       console.error('Error submitting recipe:', error);
+      alert(error.message || 'Failed to submit recipe');
     } finally {
       setIsSubmitting(false);
     }
@@ -120,12 +154,13 @@ const RecipeForm = ({ type, recipe, setRecipe, handleSubmit }) => {
               className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-base px-4 py-3"
             >
               <option value="">Select a category</option>
-              <option value="Breakfast">Breakfast</option>
-              <option value="Lunch">Lunch</option>
-              <option value="Dinner">Dinner</option>
-              <option value="Dessert">Dessert</option>
-              <option value="Snack">Snack</option>
-              <option value="Beverage">Beverage</option>
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="dessert">Dessert</option>
+              <option value="snacks">Snacks</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
             </select>
           </div>
 

@@ -61,10 +61,11 @@ ${recipe.instructions.map((i, index) => `${index + 1}. ${i}`).join("\n")}
     try {
       // Store current state
       const wasLiked = isLiked;
+      const currentLikesCount = likesCount;
       
       // Optimistic update
       setIsLiked(!wasLiked);
-      setLikesCount(wasLiked ? likesCount - 1 : likesCount + 1);
+      setLikesCount(wasLiked ? currentLikesCount - 1 : currentLikesCount + 1);
 
       const response = await fetch(`/api/recipe/${recipe._id}/like`, {
         method: 'POST',
@@ -77,7 +78,7 @@ ${recipe.instructions.map((i, index) => `${index + 1}. ${i}`).join("\n")}
       if (!response.ok) {
         // Revert optimistic update if request fails
         setIsLiked(wasLiked);
-        setLikesCount(wasLiked ? likesCount + 1 : likesCount - 1);
+        setLikesCount(currentLikesCount);
         throw new Error('Failed to like recipe');
       }
 
@@ -85,6 +86,7 @@ ${recipe.instructions.map((i, index) => `${index + 1}. ${i}`).join("\n")}
       // Update state with server response
       setIsLiked(data.isLiked);
       setLikesCount(data.likes);
+      
     } catch (error) {
       console.error('Error liking recipe:', error);
     }
