@@ -1,117 +1,122 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Form from "@components/Form";
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import RecipeForm from '@/components/RecipeForm';
+import { connectToDB } from '@/utils/database';
+import Recipe from '@/models/recipe';
 
-const UpdateRecipe = () => {
+function UpdateRecipeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const recipeId = searchParams.get("id");
-
-  const [submitting, setIsSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
+  const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState(null);
-  const [recipe, setRecipe] = useState({
-    title: "",
-    description: "",
-    ingredients: [],
-    instructions: [],
-    cookingTime: "",
-    category: "",
-    images: []
-  });
 
   useEffect(() => {
-    const getRecipeDetails = async () => {
+    const fetchRecipe = async () => {
       try {
-        const response = await fetch(`/api/recipe/${recipeId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch recipe");
+        const recipeId = searchParams.get('id');
+        if (!recipeId) {
+          setError('No recipe ID provided');
+          return;
         }
-        const data = await response.json();
 
-        setRecipe({
-          title: data.title,
-          description: data.description,
-          ingredients: data.ingredients,
-          instructions: data.instructions,
-          cookingTime: data.cookingTime,
-          category: data.category,
-          images: data.images
-        });
+        await connectToDB();
+        const foundRecipe = await Recipe.findById(recipeId);
+        
+        if (!foundRecipe) {
+          setError('Recipe not found');
+          return;
+        }
+
+        if (foundRecipe.creator.toString() !== session?.user?.id) {
+          setError('You are not authorized to edit this recipe');
+          return;
+        }
+
+        setRecipe(foundRecipe);
       } catch (error) {
-        console.error("Error fetching recipe:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
+        console.error('Error fetching recipe:', error);
+        setError('Failed to load recipe');
       }
     };
 
-    if (recipeId) getRecipeDetails();
-  }, [recipeId]);
+    if (session?.user) {
+      fetchRecipe();
+    }
+  }, [searchParams, session]);
 
-  const updateRecipe = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
+  const handleSubmit = async (formData) => {
     try {
+      const recipeId = searchParams.get('id');
       const response = await fetch(`/api/recipe/${recipeId}`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(recipe),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update recipe");
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update recipe');
       }
 
-      router.push(`/recipe/${recipeId}`);
+      router.push('/profile');
     } catch (error) {
-      console.error("Error updating recipe:", error);
+      console.error('Error updating recipe:', error);
       setError(error.message);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
-      <div className="flex-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-700 mb-4">Error</h1>
-          <p className="text-gray-600">{error}</p>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-red-700 mb-4">{error}</p>
           <button
-            onClick={() => router.push("/")}
-            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+            onClick={() => router.push('/profile')}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
-            Go Back Home
+            Go Back to Profile
           </button>
         </div>
       </div>
     );
   }
 
-  return (
-    <Form
-      type='Edit'
-      recipe={recipe}
-      setRecipe={setRecipe}
-      submitting={submitting}
-      handleSubmit={updateRecipe}
-    />
-  );
-};
+  if (!recipe) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
-export default UpdateRecipe; 
+  return (
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Update Recipe</h1>
+      <RecipeForm
+        type="Edit"
+        recipe={recipe}
+        setRecipe={setRecipe}
+        handleSubmit={handleSubmit}
+      />
+    </div>
+  );
+}
+
+export default function UpdateRecipe() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    }>
+      <UpdateRecipeContent />
+    </Suspense>
+  );
+} 

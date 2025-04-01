@@ -1,7 +1,8 @@
 import Recipe from "@models/recipe";
 import { connectToDB } from "@utils/database";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { NextResponse } from "next/server";
 
 export const GET = async (request, { params }) => {
     try {
