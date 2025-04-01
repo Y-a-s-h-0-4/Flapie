@@ -4,8 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import RecipeForm from '@/components/RecipeForm';
-import { connectToDB } from '@/utils/database';
-import Recipe from '@/models/recipe';
 
 function UpdateRecipeContent() {
   const router = useRouter();
@@ -23,23 +21,26 @@ function UpdateRecipeContent() {
           return;
         }
 
-        await connectToDB();
-        const foundRecipe = await Recipe.findById(recipeId);
-        
-        if (!foundRecipe) {
-          setError('Recipe not found');
-          return;
+        const response = await fetch(`/api/recipe/${recipeId}`, {
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Failed to fetch recipe');
         }
 
-        if (foundRecipe.creator.toString() !== session?.user?.id) {
+        const data = await response.json();
+        
+        if (data.creator._id !== session?.user?.id) {
           setError('You are not authorized to edit this recipe');
           return;
         }
 
-        setRecipe(foundRecipe);
+        setRecipe(data);
       } catch (error) {
         console.error('Error fetching recipe:', error);
-        setError('Failed to load recipe');
+        setError(error.message);
       }
     };
 
@@ -56,6 +57,7 @@ function UpdateRecipeContent() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -97,14 +99,16 @@ function UpdateRecipeContent() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Update Recipe</h1>
-      <RecipeForm
-        type="Edit"
-        recipe={recipe}
-        setRecipe={setRecipe}
-        handleSubmit={handleSubmit}
-      />
+      <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
+        <RecipeForm
+          type="Edit"
+          recipe={recipe}
+          setRecipe={setRecipe}
+          handleSubmit={handleSubmit}
+        />
+      </div>
     </div>
   );
 }

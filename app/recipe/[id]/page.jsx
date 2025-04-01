@@ -101,10 +101,10 @@ const RecipePage = () => {
   const isCreator = session?.user?.id === recipe.creator?._id;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 mt-20">
+    <div className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-8 mt-16 sm:mt-20">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Recipe Header */}
-        <div className="relative h-64 bg-gray-100">
+        <div className="relative h-48 sm:h-64 bg-gray-100">
           {recipe.images && recipe.images.length > 0 ? (
             <img
               src={recipe.images[0]}
@@ -114,7 +114,7 @@ const RecipePage = () => {
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-100">
               <svg
-                className="w-24 h-24 text-gray-400"
+                className="w-16 h-16 sm:w-24 sm:h-24 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -128,13 +128,13 @@ const RecipePage = () => {
               </svg>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-            <h1 className="text-3xl font-bold text-white">{recipe.title}</h1>
-            <div className="flex items-center gap-4 mt-2">
-              <span className="px-3 py-1 bg-green-500 text-white rounded-full text-sm">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 sm:p-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white break-words">{recipe.title}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
+              <span className="px-2 sm:px-3 py-1 bg-green-500 text-white rounded-full text-sm">
                 {recipe.category}
               </span>
-              <span className="text-white/80 flex items-center gap-1">
+              <span className="text-white/80 flex items-center gap-1 text-sm sm:text-base">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -155,17 +155,17 @@ const RecipePage = () => {
         </div>
 
         {/* Recipe Content */}
-        <div className="p-6">
-          <p className="text-gray-600 mb-6">{recipe.description}</p>
+        <div className="p-4 sm:p-6">
+          <p className="text-gray-600 mb-6 break-words">{recipe.description}</p>
 
           {/* Ingredients */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Ingredients</h2>
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Ingredients</h2>
             <ul className="space-y-2">
               {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-center gap-2">
+                <li key={index} className="flex items-center gap-2 break-words">
                   <svg
-                    className="w-5 h-5 text-green-500"
+                    className="w-5 h-5 text-green-500 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -184,12 +184,12 @@ const RecipePage = () => {
           </div>
 
           {/* Instructions */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Instructions</h2>
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Instructions</h2>
             <ol className="space-y-4">
               {recipe.instructions.map((instruction, index) => (
-                <li key={index} className="flex gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">
+                <li key={index} className="flex gap-3 sm:gap-4 break-words">
+                  <span className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base">
                     {index + 1}
                   </span>
                   <span className="text-gray-700">{instruction}</span>
@@ -199,8 +199,8 @@ const RecipePage = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between pt-6 border-t">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 pt-6 border-t">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
               <button
                 onClick={() => {
                   const recipeText = `
@@ -220,7 +220,7 @@ ${recipe.instructions.map((i, index) => `${index + 1}. ${i}`).join("\n")}
                   navigator.clipboard.writeText(recipeText);
                   alert("Recipe copied to clipboard!");
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors w-full sm:w-auto justify-center"
               >
                 <svg
                   className="w-5 h-5"
@@ -239,10 +239,10 @@ ${recipe.instructions.map((i, index) => `${index + 1}. ${i}`).join("\n")}
               </button>
             </div>
             {isCreator && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => router.push(`/update-recipe?id=${id}`)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto justify-center"
                 >
                   <svg
                     className="w-5 h-5"
@@ -261,7 +261,7 @@ ${recipe.instructions.map((i, index) => `${index + 1}. ${i}`).join("\n")}
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors w-full sm:w-auto justify-center"
                 >
                   <svg
                     className="w-5 h-5"
