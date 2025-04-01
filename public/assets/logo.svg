@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#22C55E"/>
+  
+  <!-- Utensils -->
+  <path d="M160 160V352" stroke="white" stroke-width="24" stroke-linecap="round"/>
+  <path d="M160 256H200" stroke="white" stroke-width="24" stroke-linecap="round"/>
+  <path d="M240 160V352" stroke="white" stroke-width="24" stroke-linecap="round"/>
+  <path d="M240 256H280" stroke="white" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- Plate -->
+  <circle cx="256" cy="256" r="80" stroke="white" stroke-width="24"/>
+  <circle cx="256" cy="256" r="40" stroke="white" stroke-width="24"/>
+</svg> 
