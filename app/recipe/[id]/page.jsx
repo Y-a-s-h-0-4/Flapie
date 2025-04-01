@@ -40,6 +40,7 @@ const RecipePage = () => {
     try {
       const response = await fetch(`/api/recipe/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -48,7 +49,7 @@ const RecipePage = () => {
         throw new Error(data.error || "Failed to delete recipe");
       }
 
-      router.push("/");
+      router.push("/profile");
     } catch (error) {
       console.error("Error deleting recipe:", error);
       setError(error.message);
