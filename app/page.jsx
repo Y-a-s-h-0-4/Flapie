@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Feed from "@components/Feed";
 
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchRecipes = async () => {
+      setIsLoading(true);
       const response = await fetch("/api/recipe");
       const data = await response.json();
       setRecipes(data);
+      setIsLoading(false);
     };
 
     fetchRecipes();
@@ -27,7 +30,7 @@ const Home = () => {
         Flapie is an open-source recipe sharing platform for the world to discover, create and share creative recipes.
       </p>
 
-      <Feed recipes={recipes} />
+        <Feed recipes={recipes} isLoading={isLoading} />
     </section>
   );
 };

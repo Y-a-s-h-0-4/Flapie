@@ -3,7 +3,7 @@
 import { useState } from "react";
 import RecipeCard from "./RecipeCard";
 
-const Feed = ({ recipes }) => {
+const Feed = ({ recipes, isLoading }) => {
   const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState("all");
 
@@ -75,7 +75,12 @@ const Feed = ({ recipes }) => {
         </div>
       </div>
 
-      {filteredRecipes.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center h-[40vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        </div>
+      ) : (
+      filteredRecipes.length === 0 ? (
         <div className="text-center py-12">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
@@ -101,7 +106,7 @@ const Feed = ({ recipes }) => {
             <RecipeCard key={recipe._id} recipe={recipe} />
           ))}
         </div>
-      )}
+      ))}
     </section>
   );
 };
