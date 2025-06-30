@@ -1,61 +1,33 @@
-# Next.js AI Prompt Sharing App
+# 🧁 Flapie — Recipe Sharing Application
 
-## Introduction
+Flapie is a modern, full-stack recipe sharing platform that allows users to discover, share, and manage their favorite dishes. Built with the MERN stack, Flapie is designed to be visually appealing, user-friendly, and scalable for food enthusiasts and home chefs.
 
-Welcome to the Next.js AI Prompt Sharing App! This application highlights the key features of Next.js while providing a comprehensive CRUD (Create, Read, Update, Delete) AI prompt-sharing system. Utilizing MongoDB for database management and integrating NextAuth for authentication, this app offers a modern and secure platform for users to discover, share, and interact with AI prompts.
+## 🔥 Features
 
-## Tech Stack
-
-- Next.js
-- MongoDB
-- NextAuth
-- TailwindCSS
-
-## Features
-
-- **Modern Design with Glassmorphism Trend Style:** A visually appealing design incorporating the glass morphism trend for a sleek appearance.
+- 👨‍🍳 **User Authentication**
+  - Register, login, and manage user sessions securely using JWT.
   
-- **Discover and Share AI Prompts:** Users can explore AI prompts the community shares and create their own to share with others.
+- 📖 **Recipe Management**
+  - Add, edit, and delete recipes with images and detailed descriptions.
   
-- **Edit and Delete Created Prompts:** Users can edit and delete their created prompts as needed.
+- 🔍 **Search & Filter**
+  - Easily find recipes by name or category using an intuitive search bar.
   
-- **Profile Page:** Each user gets a dedicated profile page showcasing their created prompts and contributions.
-  
-- **View Other People's Profiles:** Explore the profiles of other creators to see the prompts they've shared, fostering community interaction.
-  
-- **Copy to Clipboard:** Convenient functionality for users to easily copy AI prompts for personal use.
-  
-- **Search Prompts by Specific Tag:** Users can search for prompts based on specific tags, simplifying the discovery process.
-  
-- **Google Authentication using NextAuth:** Secure Google authentication ensures a streamlined and trustworthy login experience.
-  
-- **Responsive Website:** Fully responsive design ensures optimal user experience across various devices.
+- ❤️ **Favorites**
+  - Like and bookmark recipes for quick access later.
 
-_and many more, including code architecture and reusability_
+- 🖼️ **Image Upload**
+  - Upload images for each recipe via Cloudinary.
 
-## Quick Start
+- 🌐 **Responsive Design**
+  - Optimized for all devices (mobile, tablet, desktop).
 
-Follow these steps to set up the project locally on your machine:
+## 🛠️ Tech Stack
 
-### Prerequisites
+| Frontend   | Backend      | Database | Others            |
+|------------|--------------|----------|-------------------|
+| React.js   | Node.js      | MongoDB  | Express.js, JWT   |
+| TailwindCSS| REST API     | Mongoose | Cloudinary, Axios |
 
-- Git
-- Node.js
-- npm (Node Package Manager)
+## 📂 Project Structure
 
-### Cloning the Repository
-
-git clone https://github.com/Yashwanth-2004/MyBlog.git
-
-### Installation
-
-Install project dependencies using npm:
-
--npm install
-
-### Running
-
--npm run dev
-
-
-Happy coding! 🚀
