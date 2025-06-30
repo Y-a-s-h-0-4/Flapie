@@ -29,5 +29,4 @@ Flapie is a modern, full-stack recipe sharing platform that allows users to disc
 | React.js   | Node.js      | MongoDB  | Express.js, JWT   |
 | TailwindCSS| REST API     | Mongoose | Cloudinary, Axios |
 
-## 📂 Project Structure
 
